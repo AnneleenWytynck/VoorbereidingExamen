@@ -1,0 +1,27 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:background="@color/material_blue_grey_800">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Titel van subreddit"
+            android:textSize="23dp"
+            android:textColor="#fff000"
+            android:id="@+id/subredditTitle"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:textColor="#fd6a07"
+            android:text="Description of reddit"
+            android:layout_below="@+id/subredditTitle"
+            android:id="@+id/subredditDesc"/>
+    </RelativeLayout>
+
+</LinearLayout> 

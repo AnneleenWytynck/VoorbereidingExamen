@@ -1,15 +1,30 @@
 package com.hannes.voorbereidingexamen.Domein;
 
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+
 /**
  * Created by hannes on 18/08/15.
  */
-public class RedditPost {
+@Table(name="redditpost")
+public class RedditPost extends Model {
+
+    @Column(name="author")
     private String author;
+    @Column(name="score")
     private Double score;
+    @Column(name="title")
     private String title;
+    @Column(name="url")
     private String url;
 
+    public RedditPost(){
+        super();
+    }
+
     public RedditPost(String author, Double score, String title, String url) {
+        super();
         this.author = author;
         this.score = score;
         this.title = title;

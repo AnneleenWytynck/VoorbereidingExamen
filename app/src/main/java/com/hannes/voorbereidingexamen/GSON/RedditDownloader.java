@@ -39,8 +39,11 @@ public class RedditDownloader extends AsyncTask<String, Void, ArrayList<RedditPo
                 .setConverter(new GsonConverter(gson))
                 .build();
 
+        String subreddit = params[0];
+        System.out.println(subreddit);
+
         RedditService service = restAdapter.create(RedditService.class);
-        return service.getReddits();
+        return service.getReddits(subreddit);
     }
 
     @Override

@@ -8,11 +8,15 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.activeandroid.query.Delete;
+import com.activeandroid.query.Select;
 import com.hannes.voorbereidingexamen.Adapters.RedditAdapter;
 import com.hannes.voorbereidingexamen.Domein.RedditPost;
 import com.hannes.voorbereidingexamen.Domein.Subreddit;
 import com.hannes.voorbereidingexamen.GSON.RedditDownloader;
+import com.hannes.voorbereidingexamen.GSON.SubredditsDownloader;
 import com.hannes.voorbereidingexamen.Interfaces.AsyncResponse;
 import com.hannes.voorbereidingexamen.Interfaces.AsyncResponseRedditPosts;
 import com.hannes.voorbereidingexamen.Interfaces.OnItemSelectListener;
@@ -21,6 +25,7 @@ import com.hannes.voorbereidingexamen.Reddit_detail_item;
 import com.hannes.voorbereidingexamen.Reddit_list_item;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RedditsActivity extends ActionBarActivity implements AsyncResponseRedditPosts, OnItemSelectListener{
 
@@ -33,6 +38,9 @@ public class RedditsActivity extends ActionBarActivity implements AsyncResponseR
 
     private Reddit_detail_item detailFragment;
 
+    List<RedditPost> redditsDB = new ArrayList<>();
+
+    String subreddit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,17 +63,43 @@ public class RedditsActivity extends ActionBarActivity implements AsyncResponseR
             ft.add(R.id.redditPostM, new Reddit_detail_item());
             ft.commit();
         }
-       /* Intent intent = getIntent();
-        String subreddit = intent.getStringExtra("subreddit");*/
 
-        RedditDownloader task = new RedditDownloader();
-        task.setDelegate(this);
-        task.execute();
+        Intent intent = getIntent();
+        subreddit = intent.getStringExtra("subreddit");
+
+
+
+
+
+        Select select = new Select();
+        redditsDB = select.all().from(RedditPost.class).execute();
+        if (redditsDB.size() > 0){
+            posts.clear();
+            for (RedditPost p : redditsDB){
+                posts.add(p);
+            }
+            aa.notifyDataSetChanged();
+        } else {
+            RedditDownloader task = new RedditDownloader();
+            task.setDelegate(this);
+            task.execute(subreddit);
+        }
+
+
     }
 
     @Override
     public void processRedditsFinish(ArrayList<RedditPost> output) {
+        Toast.makeText(this, "Databank werd geleegd", Toast.LENGTH_LONG).show();
+        new Delete().from(Subreddit.class).execute();
+
         posts.addAll(output);
+
+        for (RedditPost s : output){
+            s.save();
+        }
+        Toast.makeText(this,"Overzicht werd vernieuwd",Toast.LENGTH_LONG).show();
+
         aa.notifyDataSetChanged();
     }
 
@@ -89,5 +123,32 @@ public class RedditsActivity extends ActionBarActivity implements AsyncResponseR
 
     private void checkLandscape(){
         isLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_subreddits, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.refresh_settings :
+                posts.clear();
+                RedditDownloader task = new RedditDownloader();
+                task.setDelegate(this);
+                task.execute(subreddit);
+                System.out.println("Refresh pushed");
+                return true;
+
+            case R.id.search_settings:
+                Toast.makeText(this,"This method is not implemented yet",Toast.LENGTH_LONG).show();
+                return true;
+
+
+        }
+        return true;
+
     }
 }

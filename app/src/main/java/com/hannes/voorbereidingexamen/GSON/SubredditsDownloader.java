@@ -37,6 +37,7 @@ public class SubredditsDownloader extends AsyncTask<String, Void, ArrayList<Subr
                 .setConverter(new GsonConverter(gson))
                 .build();
 
+
         SubredditService service = restAdapter.create(SubredditService.class);
         return service.getSubreddits();
     }

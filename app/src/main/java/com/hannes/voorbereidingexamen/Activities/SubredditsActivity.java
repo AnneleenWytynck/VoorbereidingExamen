@@ -4,6 +4,9 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
@@ -64,6 +67,7 @@ public class SubredditsActivity extends ActionBarActivity implements AsyncRespon
     public void processSubredditsFinish(ArrayList<Subreddit> output) {
 
         //Leeg db dat ze er niet dubbel in staan
+        Toast.makeText(this,"Databank werd geleegd",Toast.LENGTH_LONG).show();
         new Delete().from(Subreddit.class).execute();
 
         //Bij de download moet je subreddits bijhouden
@@ -72,6 +76,7 @@ public class SubredditsActivity extends ActionBarActivity implements AsyncRespon
         for (Subreddit s : output){
             s.save();
         }
+        Toast.makeText(this,"Overzicht werd vernieuwd",Toast.LENGTH_LONG).show();
         aa.notifyDataSetChanged();
 
 
@@ -85,5 +90,32 @@ public class SubredditsActivity extends ActionBarActivity implements AsyncRespon
         Intent i = new Intent(this,RedditsActivity.class);
         i.putExtra("subreddit", subreddit.getName());
         startActivity(i);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_subreddits,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.refresh_settings :
+                subreddits.clear();
+                SubredditsDownloader task = new SubredditsDownloader();
+                task.setDelegate(this);
+                task.execute();
+                System.out.println("Refresh pushed");
+                return true;
+
+            case R.id.search_settings:
+                Toast.makeText(this,"This method is not implemented yet",Toast.LENGTH_LONG).show();
+                return true;
+
+
+        }
+        return true;
+
     }
 }
